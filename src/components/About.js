@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
+import CaContext from "../context/contractapp/CaContext";
 
-export default function About() {
+const About = () => {
+  const cactx = useContext(CaContext);
   return (
-    <div className="container">
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Alias, itaque
-      ducimus, id quia consectetur mollitia incidunt culpa cumque vitae aut
-      dolore atque animi? Nihil molestiae facilis vero aliquam ullam excepturi.
+    <div className="container" style={{ marginTop: "60px" }}>
+      <h3> Developed By : {cactx.devloper}</h3>
+      <h3> Email : {cactx.email}</h3>
     </div>
   );
-}
+};
+export default About;
