@@ -9,121 +9,123 @@ import { FilterMatchMode } from "primereact/api";
 import { ToastContainer, toast } from "react-toastify";
 import { Dialog } from "primereact/dialog";
 
-export default function EmployeeGrid(props) {
-  let emptyEmployee = {
+export default function WorkGrid(props) {
+  let emptyWork = {
     _id: "",
     name: "",
-    aadhar: "",
-    account: "",
-    ifsc: "",
-    esic: "",
-    epf: "",
-    sex: "",
-    birthdate: "",
+    division: "",
+    allotedDate: "",
+    fdrBankGuaranteeNo: "",
+    guaranteeAmount: "",
+    estimatedCost: "",
+    contractorCost: "",
+    acceptedCost: "",
+    percentageTender: "",
+    timeAllowed: "",
   };
 
-  const [deleteEmployeeDialog, setDeleteEmployeeDialog] = useState(false);
-  const [employee, setEmployee] = useState(emptyEmployee);
-  const [selectedEmployees, setSelectedEmployees] = useState(null);
-  const [deleteEmployeesDialog, setDeleteEmployeesDialog] = useState(false);
+  const [deleteWorkDialog, setDeleteWorkDialog] = useState(false);
+  const [work, setWork] = useState(emptyWork);
+  const [selectedWorks, setSelectedWorks] = useState(null);
+  const [deleteWorksDialog, setDeleteWorksDialog] = useState(false);
 
   const context = useContext(CaContext);
-  const { employees, deleteEmployee, deleteEmployees, getEmployees } = context;
+  const { works, deleteWork, deleteWorks, getWorks } = context;
 
   useEffect(() => {
-    getEmployees();
+    getWorks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const search = "Search";
   const navigate = useNavigate();
-  const addNewEmployee = () => {
-    navigate("/addemployee");
+  const addNewWork = () => {
+    navigate("/addwork");
   };
 
-  const editEmployee = (rowData) => {
-    navigate("/addemployee", { state: rowData });
+  const editWork = (rowData) => {
+    navigate("/addWork", { state: rowData });
   };
 
-  const confirmDeleteEmployee = (employee) => {
-    setEmployee(employee);
-    setDeleteEmployeeDialog(true);
+  const confirmDeleteWork = (work) => {
+    setWork(work);
+    setDeleteWorkDialog(true);
   };
 
-  const hideDeleteEmployeeDialog = () => {
-    setDeleteEmployeeDialog(false);
+  const hideDeleteWorkDialog = () => {
+    setDeleteWorkDialog(false);
   };
 
-  const hideDeleteEmployeesDialog = () => {
-    setDeleteEmployeesDialog(false);
+  const hideDeleteWorksDialog = () => {
+    setDeleteWorksDialog(false);
   };
 
-  const deleteEmp = async (e) => {
+  const deleteW = async (e) => {
     try {
-      await deleteEmployee(employee);
-      setDeleteEmployeeDialog(false);
-      toast.success("Employee successfully deleted", {
+      await deleteWork(work);
+      setDeleteWorkDialog(false);
+      toast.success("Work successfully deleted", {
         theme: "dark",
         hideProgressBar: true,
       });
     } catch (e) {
-      toast.error(`Employee deletion failed! ${e.message}`, {
+      toast.error(`Work deletion failed! ${e.message}`, {
         theme: "dark",
         hideProgressBar: true,
       });
     }
   };
 
-  const deleteSelectedEmployees = async (e) => {
+  const deleteSelectedWorks = async (e) => {
     try {
-      await deleteEmployees(selectedEmployees);
-      setDeleteEmployeesDialog(false);
-      setSelectedEmployees(null);
-      toast.success("Employees successfully deleted", {
+      await deleteWorks(selectedWorks);
+      setDeleteWorksDialog(false);
+      setSelectedWorks(null);
+      toast.success("Works successfully deleted", {
         theme: "dark",
         hideProgressBar: true,
       });
     } catch (e) {
-      toast.error(`Employees deletion failed! ${e.message}`, {
+      toast.error(`Works deletion failed! ${e.message}`, {
         theme: "dark",
         hideProgressBar: true,
       });
     }
   };
   const confirmDeleteSelected = () => {
-    setDeleteEmployeesDialog(true);
+    setDeleteWorksDialog(true);
   };
 
-  const deleteEmployeeDialogFooter = (
+  const deleteWorkDialogFooter = (
     <React.Fragment>
       <Button
         label="No"
         icon="pi pi-times"
         className="p-button-text"
-        onClick={hideDeleteEmployeeDialog}
+        onClick={hideDeleteWorkDialog}
       />
       <Button
         label="Yes"
         icon="pi pi-check"
         className="p-button-text"
-        onClick={deleteEmp}
+        onClick={deleteW}
       />
     </React.Fragment>
   );
 
-  const deleteEmployeesDialogFooter = (
+  const deleteWorksDialogFooter = (
     <React.Fragment>
       <Button
         label="No"
         icon="pi pi-times"
         className="p-button-text"
-        onClick={hideDeleteEmployeesDialog}
+        onClick={hideDeleteWorksDialog}
       />
       <Button
         label="Yes"
         icon="pi pi-check"
         className="p-button-text"
-        onClick={deleteSelectedEmployees}
+        onClick={deleteSelectedWorks}
       />
     </React.Fragment>
   );
@@ -132,17 +134,17 @@ export default function EmployeeGrid(props) {
     return (
       <React.Fragment>
         <Button
-          label="New Employee"
+          label="New Work"
           icon="pi pi-plus"
           className="p-button-success mr-2 p-button-sm"
-          onClick={addNewEmployee}
+          onClick={addNewWork}
         />
         <Button
           label="Delete"
           icon="pi pi-trash"
           className="p-button-danger p-button-sm"
           onClick={confirmDeleteSelected}
-          disabled={!selectedEmployees || !selectedEmployees.length}
+          disabled={!selectedWorks || !selectedWorks.length}
         />
       </React.Fragment>
     );
@@ -167,25 +169,27 @@ export default function EmployeeGrid(props) {
   };
 
   const exportExcel = () => {
-    const exportEmployees = employees.map((row) => ({
+    const exportWorks = works.map((row) => ({
       Name: row.name,
-      Aadhar_Card: row.aadharCardNumber,
-      AccountNumber: row.accountNumber,
-      Ifsc_Code: row.ifscCode,
-      Esic_Number: row.esicNumber,
-      Epf_Number: row.epfNumber,
-      Sex: row.sex,
-      Birthdate: row.birthDate,
+      Division: row.division,
+      Allotment_Date: row.allotedDate,
+      FDR_Bank_Guarantee_Account_No: row.fdrBankGuaranteeNo,
+      Guarantee_Amount: row.guaranteeAmount,
+      Estimated_Cost: row.estimatedCost,
+      Contractor_Cost: row.contractorCost,
+      Accepted_Cost: row.acceptedCost,
+      Percentage_Cost: row.percentageTender,
+      Time_Allowed: row.timeAllowed,
     }));
 
     import("xlsx").then((xlsx) => {
-      const worksheet = xlsx.utils.json_to_sheet(exportEmployees);
+      const worksheet = xlsx.utils.json_to_sheet(exportWorks);
       const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
       const excelBuffer = xlsx.write(workbook, {
         bookType: "xlsx",
         type: "array",
       });
-      saveAsExcelFile(excelBuffer, "Employees");
+      saveAsExcelFile(excelBuffer, "Works");
     });
   };
 
@@ -207,32 +211,29 @@ export default function EmployeeGrid(props) {
         <Button
           icon="pi pi-pencil"
           className="p-button-rounded p-button-raised p-button-warning mr-2 p-button-sm"
-          onClick={() => editEmployee(rowData)}
+          onClick={() => editWork(rowData)}
         />
         <Button
           icon="pi pi-trash"
           className="p-button-rounded p-button-raised p-button-danger p-button-sm"
-          onClick={() => confirmDeleteEmployee(rowData)}
+          onClick={() => confirmDeleteWork(rowData)}
         />
       </React.Fragment>
     );
   };
 
   const formatDate = (rowData) => {
-    if (rowData["birthDate"]) {
-      return rowData["birthDate"].substring(
+    if (rowData["allottedDate"]) {
+      return rowData["allottedDate"].substring(
         0,
-        rowData["birthDate"].indexOf("T")
+        rowData["allottedDate"].indexOf("T")
       );
     }
   };
 
-  const filtersEmployee = {
+  const filtersWork = {
     name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    aadharCardNumber: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    accountNumber: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    ifscCode: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    sex: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    division: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   };
 
   return (
@@ -245,8 +246,8 @@ export default function EmployeeGrid(props) {
           style={{ height: "80px" }}
         ></Toolbar>
         <DataTable
-          value={employees}
-          header="Employees"
+          value={works}
+          header="Works"
           showGridlines
           stripedRows
           size="small"
@@ -258,11 +259,11 @@ export default function EmployeeGrid(props) {
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
           rows={10}
           rowsPerPageOptions={[10, 20, 50]}
-          emptyMessage="No Employee found."
-          filters={filtersEmployee}
+          emptyMessage="No Work found."
+          filters={filtersWork}
           filterDisplay="row"
-          selection={selectedEmployees}
-          onSelectionChange={(e) => setSelectedEmployees(e.value)}
+          selection={selectedWorks}
+          onSelectionChange={(e) => setSelectedWorks(e.value)}
         >
           <Column
             selectionMode="multiple"
@@ -277,39 +278,27 @@ export default function EmployeeGrid(props) {
             filterPlaceholder={search}
           />
           <Column
-            field="aadharCardNumber"
-            header="Aadhar Card"
+            field="division"
+            header="Division"
             sortable
             filter
             filterPlaceholder={search}
           />
           <Column
-            field="accountNumber"
-            header="Account No"
-            sortable
-            filter
-            filterPlaceholder={search}
-          />
-          <Column
-            field="ifscCode"
-            header="IFSC Code"
-            sortable
-            filter
-            filterPlaceholder={search}
-          />
-          <Column
-            field="sex"
-            header="Sex"
-            sortable
-            filter
-            filterPlaceholder={search}
-          />
-          <Column
-            field="birthDate"
+            field="allotedDate"
             body={formatDate}
-            header="Birth Date"
-            style={{ width: "10%" }}
+            header="Allotment Date"
+            sortable
           />
+          <Column field="estimatedCost" header="Estimated Cost" sortable />
+          <Column field="contractorCost" header="Contractor Cost" sortable />
+          <Column field="acceptedCost" header="Accepted Cost" sortable />
+          <Column
+            field="percentageTender"
+            header="Percentage of tender"
+            sortable
+          />
+          <Column field="timeAllowed" header="Time Allowed" sortable />
           <Column
             body={actionBodyTemplate}
             exportable={false}
@@ -319,35 +308,35 @@ export default function EmployeeGrid(props) {
         </DataTable>
       </div>
       <Dialog
-        visible={deleteEmployeeDialog}
+        visible={deleteWorkDialog}
         style={{ width: "450px" }}
         header="Confirm"
         modal
-        footer={deleteEmployeeDialogFooter}
-        onHide={hideDeleteEmployeeDialog}
+        footer={deleteWorkDialogFooter}
+        onHide={hideDeleteWorkDialog}
       >
         <div className="confirmation-content">
           <i
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}
           />
-          {<span>Are you sure you want to delete this employee ?</span>}
+          {<span>Are you sure you want to delete this Work ?</span>}
         </div>
       </Dialog>
       <Dialog
-        visible={deleteEmployeesDialog}
+        visible={deleteWorksDialog}
         style={{ width: "450px" }}
         header="Confirm"
         modal
-        footer={deleteEmployeesDialogFooter}
-        onHide={hideDeleteEmployeesDialog}
+        footer={deleteWorksDialogFooter}
+        onHide={hideDeleteWorksDialog}
       >
         <div className="confirmation-content">
           <i
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}
           />
-          {<span>Are you sure you want to delete the selected Employees?</span>}
+          {<span>Are you sure you want to delete the selected Works?</span>}
         </div>
       </Dialog>
       <ToastContainer autoClose={1000} />

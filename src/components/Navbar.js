@@ -33,7 +33,7 @@ const Navbar = () => {
                 }`}
                 to="/"
               >
-                Home
+                EmployeeAtWork
               </Link>
             </li>
 
@@ -45,6 +45,17 @@ const Navbar = () => {
                 to="/employeegrid"
               >
                 Employee
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link
+                className={`nav-link ${
+                  location.pathname === "/workgrid" ? "active" : ""
+                }`}
+                to="/workgrid"
+              >
+                Work
               </Link>
             </li>
 

@@ -1,6 +1,6 @@
 import React from "react";
-import EmployeeGrid from "./EmployeeGrid";
+import WorkEmployeeGrid from "./WorkEmployeeGrid";
 
 export default function Home() {
-  return <EmployeeGrid />;
+  return <WorkEmployeeGrid />;
 }
