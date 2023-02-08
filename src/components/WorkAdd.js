@@ -15,6 +15,7 @@ export default function WorkAdd() {
     division: "",
     allottedDate: "",
     fdrBankGuaranteeNo: "",
+    fdrBankName: "",
     guaranteeAmount: "",
     estimatedCost: "",
     contractorCost: "",
@@ -38,6 +39,7 @@ export default function WorkAdd() {
         division: location.state.division,
         allottedDate: allottedDate,
         fdrBankGuaranteeNo: location.state.fdrBankGuaranteeNo,
+        fdrBankName: location.state.fdrBankName,
         guaranteeAmount: location.state.guaranteeAmount,
         estimatedCost: location.state.estimatedCost,
         contractorCost: location.state.contractorCost,
@@ -59,7 +61,6 @@ export default function WorkAdd() {
   const handleUpdate = async (work) => {
     try {
       await updateWork(work);
-
       toast.success("Work successfully updated", {
         theme: "dark",
         hideProgressBar: true,
@@ -86,6 +87,7 @@ export default function WorkAdd() {
         division: "",
         allottedDate: "",
         fdrBankGuaranteeNo: "",
+        fdrBankName: "",
         guaranteeAmount: "",
         estimatedCost: "",
         contractorCost: "",
@@ -194,21 +196,40 @@ export default function WorkAdd() {
                 htmlFor="colFormLabelSm"
                 className="col-sm-2  col-form-label-sm text-right fw-bold"
               >
+                FDR/Bank Guarantee - Bank Name:
+              </label>
+              <div className="col-sm-4">
+                <input
+                  type="text"
+                  className=" form-control form-control-sm "
+                  id="fdrBankName"
+                  name="fdrBankName"
+                  onChange={onChange}
+                  value={work.fdrBankName}
+                />
+              </div>
+              <label
+                htmlFor="colFormLabelSm"
+                className="col-sm-2 col-form-label-sm text-right fw-bold"
+              >
                 Guarantee Amount :
               </label>
               <div className="col-sm-4">
                 <input
                   type="Number"
-                  className=" form-control form-control-sm "
+                  className="form-control form-control-sm"
                   id="guaranteeAmount"
                   name="guaranteeAmount"
                   onChange={onChange}
                   value={work.guaranteeAmount}
                 />
               </div>
+            </div>
+
+            <div className="row g-5 mb-3">
               <label
                 htmlFor="colFormLabelSm"
-                className="col-sm-2 col-form-label-sm text-right fw-bold"
+                className="col-sm-2  col-form-label-sm text-right fw-bold"
               >
                 Estimated Cost :
               </label>
@@ -222,9 +243,7 @@ export default function WorkAdd() {
                   value={work.estimatedCost}
                 />
               </div>
-            </div>
 
-            <div className="row g-5 mb-3">
               <label
                 htmlFor="colFormLabelSm"
                 className="col-sm-2  col-form-label-sm text-right fw-bold"
@@ -241,7 +260,8 @@ export default function WorkAdd() {
                   value={work.contractorCost}
                 />
               </div>
-
+            </div>
+            <div className="row g-5 mb-3">
               <label
                 htmlFor="colFormLabelSm"
                 className="col-sm-2  col-form-label-sm text-right fw-bold"
@@ -258,8 +278,7 @@ export default function WorkAdd() {
                   value={work.acceptedCost}
                 />
               </div>
-            </div>
-            <div className="row g-5 mb-3">
+
               <label
                 htmlFor="colFormLabelSm"
                 className="col-sm-2  col-form-label-sm text-right fw-bold"
@@ -268,7 +287,7 @@ export default function WorkAdd() {
               </label>
               <div className="col-sm-4">
                 <input
-                  type="String"
+                  type="text"
                   className="form-control form-control-sm"
                   id="percentageTender"
                   name="percentageTender"
@@ -276,7 +295,8 @@ export default function WorkAdd() {
                   value={work.percentageTender}
                 />
               </div>
-
+            </div>
+            <div className="row g-5 mb-3">
               <label
                 htmlFor="colFormLabelSm"
                 className="col-sm-2  col-form-label-sm text-right fw-bold"
@@ -291,6 +311,20 @@ export default function WorkAdd() {
                   name="timeAllowed"
                   onChange={onChange}
                   value={work.timeAllowed}
+                />
+              </div>
+              <label
+                htmlFor="colFormLabelSm"
+                className="col-sm-2  col-form-label-sm text-right fw-bold"
+              >
+                Upload FDR/Bank Guarantee :
+              </label>
+              <div className="col-sm-4">
+                <input
+                  className="form-control form-control-sm"
+                  id="fdr"
+                  name="fdr"
+                  type="file"
                 />
               </div>
             </div>

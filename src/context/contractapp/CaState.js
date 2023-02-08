@@ -109,11 +109,18 @@ const CaState = (props) => {
     if (response.status !== 200) {
       const jsonResponse = await response.json();
       var errors = jsonResponse.errors;
+      var errorlist = jsonResponse.errorlist;
       var errormessages = "";
       if (errors) {
         errors.map((e) => {
           errormessages = errormessages.concat(e.msg + " ");
           return errormessages;
+        });
+      }
+      if (errorlist) {
+        console.log(errorlist);
+        errorlist.forEach(function (error) {
+          errormessages = errormessages.concat(error + " ");
         });
       }
       throw new Error(`Request failed: ${errormessages}`);
@@ -139,11 +146,19 @@ const CaState = (props) => {
     if (response.status !== 200) {
       const jsonResponse = await response.json();
       var errors = jsonResponse.errors;
+      var errorlist = jsonResponse.errorlist;
+
       var errormessages = "";
       if (errors) {
         errors.map((e) => {
           errormessages = errormessages.concat(e.msg + " ");
           return errormessages;
+        });
+      }
+      if (errorlist) {
+        console.log(errorlist);
+        errorlist.forEach(function (error) {
+          errormessages = errormessages.concat(error + " ");
         });
       }
       throw new Error(`Request failed: ${errormessages}`);
@@ -307,6 +322,11 @@ const CaState = (props) => {
 
     if (response.status !== 200) {
       const jsonResponse = await response.json();
+      var employeeFound = jsonResponse.employeeFound;
+      if (employeeFound && employeeFound.length > 0) {
+        console.log(employeeFound);
+        return employeeFound;
+      }
       var errors = jsonResponse.errors;
       var errorlist = jsonResponse.errorlist;
       var errormessages = "";
@@ -332,7 +352,7 @@ const CaState = (props) => {
       method: "POST",
       body: JSON.stringify({
         workId: workEmployee.workId,
-        empId: workEmployee.employeeId,
+        empId: workEmployee.empIdWithWork,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -365,16 +385,24 @@ const CaState = (props) => {
         employeeId: newWorkEmployee.employeeId,
         dateFrom: newWorkEmployee.dateFrom,
         dateTo: newWorkEmployee.dateTo,
+        empIdWithWork: newWorkEmployee.empIdWithWork,
       }),
     });
     if (response.status !== 200) {
       const jsonResponse = await response.json();
       var errors = jsonResponse.errors;
+      var errorlist = jsonResponse.errorlist;
       var errormessages = "";
       if (errors) {
         errors.map((e) => {
           errormessages = errormessages.concat(e.msg + " ");
           return errormessages;
+        });
+      }
+
+      if (errorlist) {
+        errorlist.forEach(function (error) {
+          errormessages = errormessages.concat(error + " ");
         });
       }
       throw new Error(`Request failed: ${errormessages}`);

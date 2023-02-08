@@ -18,18 +18,34 @@ export default function WorkEmployeeEdit() {
     dateFrom: "",
     dateTo: "",
     aadharCardNumber: "",
+    empIdWithWork: "",
   });
 
   useEffect(() => {
     if (location.state) {
+      var dateFrom = null;
+      if (location.state.dateFrom) {
+        dateFrom = location.state.dateFrom.substring(
+          0,
+          location.state.dateFrom.indexOf("T")
+        );
+      }
+      var dateTo = null;
+      if (location.state.dateTo) {
+        dateTo = location.state.dateTo.substring(
+          0,
+          location.state.dateTo.indexOf("T")
+        );
+      }
       setWorkEmployee({
         workId: location.state.workId,
         workName: location.state.workName,
         employeeId: location.state.employeeId,
         employeeName: location.state.employeeName,
-        dateFrom: location.state.dateFrom,
-        dateTo: location.state.dateTo,
+        dateFrom: dateFrom,
+        dateTo: dateTo,
         aadharCarNumber: location.state.aadharCardNumber,
+        empIdWithWork: location.state.empIdWithWork,
       });
     }
   }, [location]);

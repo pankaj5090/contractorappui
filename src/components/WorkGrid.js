@@ -16,6 +16,7 @@ export default function WorkGrid(props) {
     division: "",
     allotedDate: "",
     fdrBankGuaranteeNo: "",
+    fdrBankName: "",
     guaranteeAmount: "",
     estimatedCost: "",
     contractorCost: "",
@@ -174,6 +175,7 @@ export default function WorkGrid(props) {
       Division: row.division,
       Allotment_Date: row.allotedDate,
       FDR_Bank_Guarantee_Account_No: row.fdrBankGuaranteeNo,
+      FDR_BankName: row.fdrBankName,
       Guarantee_Amount: row.guaranteeAmount,
       Estimated_Cost: row.estimatedCost,
       Contractor_Cost: row.contractorCost,
@@ -224,10 +226,14 @@ export default function WorkGrid(props) {
 
   const formatDate = (rowData) => {
     if (rowData["allottedDate"]) {
-      return rowData["allottedDate"].substring(
-        0,
-        rowData["allottedDate"].indexOf("T")
-      );
+      return new Date(
+        rowData["allottedDate"].substring(
+          0,
+          rowData["allottedDate"].indexOf("T")
+        )
+      )
+        .toLocaleDateString("en-GB")
+        .replace(/\//g, "-");
     }
   };
 
@@ -251,8 +257,8 @@ export default function WorkGrid(props) {
           showGridlines
           stripedRows
           size="small"
-          sortField="name"
-          sortOrder={1}
+          sortField="updatedDate"
+          sortOrder={-1}
           paginator
           responsiveLayout="scroll"
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"

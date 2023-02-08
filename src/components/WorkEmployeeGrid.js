@@ -23,6 +23,8 @@ export default function WorkEmployeeGrid(props) {
     ifscCode: "",
     epfNumber: "",
     active: "",
+    updatedDate: "",
+    empWorkId: "",
   };
 
   const [deleteWorkEmployeeDialog, setDeleteWorkEmployeeDialog] =
@@ -36,10 +38,12 @@ export default function WorkEmployeeGrid(props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const empJson = await getEmployees();
-      const empObj = createEmpObject(empJson);
-      const workJson = await getWorks();
-      populateWorkEmployees(workJson, empObj);
+      if (workEmployees.length <= 0) {
+        const empJson = await getEmployees();
+        const empObj = createEmpObject(empJson);
+        const workJson = await getWorks();
+        populateWorkEmployees(workJson, empObj);
+      }
     };
     fetchData();
 
@@ -48,7 +52,7 @@ export default function WorkEmployeeGrid(props) {
 
   const createEmpObject = (json) => {
     const empObj = new Map();
-    if (json.length >= 0) {
+    if (json && json.length >= 0) {
       json.map((emp) => {
         empObj.set(emp._id, emp);
       });
@@ -63,30 +67,34 @@ export default function WorkEmployeeGrid(props) {
         if (work.employees && work.employees.length > 0) {
           work.employees.map((obj) => {
             const emp = empObj.get(obj.id);
-            var todayDate = new Date().toISOString().slice(0, 10);
+            var todayDate = new Date().toISOString();
             var isActive = "Inactive";
-            var dateFrom = formatDate(obj.dateFrom);
-            var dateTo = formatDate(obj.dateTo);
+            var empIdWithWork = obj._id;
+            var updatedDate = obj.updatedDate;
             if (
-              new Date(todayDate) >= new Date(dateFrom) &&
-              new Date(todayDate) <= new Date(dateTo)
+              (todayDate >= obj.dateFrom && todayDate <= obj.dateTo) ||
+              todayDate <= obj.dateFrom
             ) {
               isActive = "Active";
             }
-            workEmps.push({
-              workId: work._id,
-              workName: work.name,
-              division: work.division,
-              employeeId: emp._id,
-              employeeName: emp.name,
-              aadharCardNumber: emp.aadharCardNumber,
-              accountNumber: emp.accountNumber,
-              dateFrom: dateFrom,
-              dateTo: dateTo,
-              ifscCode: emp.ifscCode,
-              epfNumber: emp.epfNumber,
-              active: isActive,
-            });
+            if (work && emp) {
+              workEmps.push({
+                workId: work._id,
+                workName: work.name,
+                division: work.division,
+                employeeId: emp._id,
+                employeeName: emp.name,
+                aadharCardNumber: emp.aadharCardNumber,
+                accountNumber: emp.accountNumber,
+                dateFrom: obj.dateFrom,
+                dateTo: obj.dateTo,
+                ifscCode: emp.ifscCode,
+                epfNumber: emp.epfNumber,
+                empIdWithWork: empIdWithWork,
+                updatedDate: updatedDate,
+                active: isActive,
+              });
+            }
           });
         }
       });
@@ -118,7 +126,7 @@ export default function WorkEmployeeGrid(props) {
       await deleteWorkEmployee(workEmployee);
       setDeleteWorkEmployeeDialog(false);
       const updatedEmpWork = workEmployees.filter((w) => {
-        return workEmployee.employeeId !== w.employeeId;
+        return workEmployee.empIdWithWork !== w.empIdWithWork;
       });
       setWorkEmployees(updatedEmpWork);
       toast.success("Employee successfully deleted from work", {
@@ -236,7 +244,27 @@ export default function WorkEmployeeGrid(props) {
 
   const formatDate = (stringDate) => {
     if (stringDate) {
-      return stringDate.substring(0, stringDate.indexOf("T"));
+      return new Date(stringDate.substring(0, stringDate.indexOf("T")));
+    }
+  };
+
+  const formatDateFrom = (rowData) => {
+    if (rowData["dateFrom"]) {
+      return new Date(
+        rowData["dateFrom"].substring(0, rowData["dateFrom"].indexOf("T"))
+      )
+        .toLocaleDateString("en-GB")
+        .replace(/\//g, "-");
+    }
+  };
+
+  const formatDateTo = (rowData) => {
+    if (rowData["dateTo"]) {
+      return new Date(
+        rowData["dateTo"].substring(0, rowData["dateTo"].indexOf("T"))
+      )
+        .toLocaleDateString("en-GB")
+        .replace(/\//g, "-");
     }
   };
 
@@ -247,6 +275,7 @@ export default function WorkEmployeeGrid(props) {
     dateTo: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     employeeName: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     aadharCardNumber: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    active: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   };
 
   return (
@@ -264,8 +293,8 @@ export default function WorkEmployeeGrid(props) {
           showGridlines
           stripedRows
           size="small"
-          sortField="name"
-          sortOrder={1}
+          sortField="updatedDate"
+          sortOrder={-1}
           paginator
           responsiveLayout="scroll"
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
@@ -314,6 +343,7 @@ export default function WorkEmployeeGrid(props) {
           <Column
             field="dateFrom"
             header="Date From"
+            body={formatDateFrom}
             sortable
             filter
             filterPlaceholder={search}
@@ -321,6 +351,7 @@ export default function WorkEmployeeGrid(props) {
           <Column
             field="dateTo"
             header="Date To"
+            body={formatDateTo}
             sortable
             filter
             filterPlaceholder={search}

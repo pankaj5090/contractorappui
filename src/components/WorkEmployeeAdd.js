@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 import CaContext from "../context/contractapp/CaContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 import Select from "react-select";
 
 export default function WorkEmployeeAdd() {
@@ -15,6 +17,8 @@ export default function WorkEmployeeAdd() {
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [selectedDateFrom, setSelectedDateFrom] = useState("");
   const [selectedDateTo, setSelectedDateTo] = useState("");
+  const [employeesAlreadyWorking, setEmployeesAlreadyWorking] = useState([]);
+  const [tableVisible, setTableVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,21 +66,35 @@ export default function WorkEmployeeAdd() {
       var emps = selectedEmployees.map(function (emp) {
         return emp["value"];
       });
-      await addWorkEmployee(
+      var employeeFound = await addWorkEmployee(
         selectedWork.value,
         emps,
         selectedDateFrom,
         selectedDateTo
       );
-      toast.success("Employees with work successfully saved", {
-        theme: "dark",
-        hideProgressBar: true,
-      });
+      if (employeeFound && employeeFound.length > 0) {
+        setEmployeesAlreadyWorking(employeeFound);
+        setTableVisible(true);
+        toast.error(
+          `Employees are already working in some other work for given period. Please check  employees in  below table:`,
+          {
+            theme: "dark",
+            hideProgressBar: true,
+            autoClose: 3000,
+          }
+        );
+      } else {
+        setTableVisible(false);
+        toast.success("Employees with work successfully saved", {
+          theme: "dark",
+          hideProgressBar: true,
+        });
 
-      setSelectedWork(null);
-      setSelectedEmployees(null);
-      setSelectedDateFrom("");
-      setSelectedDateTo("");
+        setSelectedWork(null);
+        setSelectedEmployees(null);
+        setSelectedDateFrom("");
+        setSelectedDateTo("");
+      }
     } catch (e) {
       toast.error(`Action failed! ${e.message}`, {
         theme: "dark",
@@ -197,6 +215,34 @@ export default function WorkEmployeeAdd() {
         </div>
       </div>
       <ToastContainer autoClose={1000} />
+
+      {tableVisible && (
+        <div className="card mb-3">
+          <DataTable
+            value={employeesAlreadyWorking}
+            header="Employees already working on different work"
+            showGridlines
+            stripedRows
+            size="small"
+            sortField="name"
+            sortOrder={1}
+            paginator
+            responsiveLayout="scroll"
+            paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            rows={10}
+            rowsPerPageOptions={[10, 20, 50]}
+            emptyMessage="No Employee working on different work."
+          >
+            <Column field="workName" header="Work Name" sortable />
+            <Column field="division" header="Division" sortable />
+            <Column field="empName" header="Employee Name" sortable />
+            <Column field="aadhar" header="Aadhar Card" sortable />
+            <Column field="dateFrom" header="From Date" />
+            <Column field="dateTo" header="To Date" />
+          </DataTable>
+        </div>
+      )}
     </div>
   );
 }

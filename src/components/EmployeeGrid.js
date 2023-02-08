@@ -67,6 +67,7 @@ export default function EmployeeGrid(props) {
         hideProgressBar: true,
       });
     } catch (e) {
+      setDeleteEmployeeDialog(false);
       toast.error(`Employee deletion failed! ${e.message}`, {
         theme: "dark",
         hideProgressBar: true,
@@ -220,10 +221,11 @@ export default function EmployeeGrid(props) {
 
   const formatDate = (rowData) => {
     if (rowData["birthDate"]) {
-      return rowData["birthDate"].substring(
-        0,
-        rowData["birthDate"].indexOf("T")
-      );
+      return new Date(
+        rowData["birthDate"].substring(0, rowData["birthDate"].indexOf("T"))
+      )
+        .toLocaleDateString("en-GB")
+        .replace(/\//g, "-");
     }
   };
 
@@ -250,8 +252,8 @@ export default function EmployeeGrid(props) {
           showGridlines
           stripedRows
           size="small"
-          sortField="name"
-          sortOrder={1}
+          sortField="updatedDate"
+          sortOrder={-1}
           paginator
           responsiveLayout="scroll"
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
