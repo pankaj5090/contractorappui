@@ -11,7 +11,7 @@ const About = () => {
         <img
           className="card-img-top"
           src={shivaImage}
-          alt="Card image cap"
+          alt="Card cap"
           width="300"
           height="300"
         />

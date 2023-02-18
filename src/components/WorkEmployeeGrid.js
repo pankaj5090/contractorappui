@@ -53,7 +53,7 @@ export default function WorkEmployeeGrid(props) {
   const createEmpObject = (json) => {
     const empObj = new Map();
     if (json && json.length >= 0) {
-      json.map((emp) => {
+      json.forEach((emp) => {
         empObj.set(emp._id, emp);
       });
       return empObj;
@@ -63,9 +63,9 @@ export default function WorkEmployeeGrid(props) {
   const populateWorkEmployees = (workList, empObj) => {
     const workEmps = [];
     if (workList.length > 0) {
-      workList.map((work) => {
+      workList.forEach((work) => {
         if (work.employees && work.employees.length > 0) {
-          work.employees.map((obj) => {
+          work.employees.forEach((obj) => {
             const emp = empObj.get(obj.id);
             var todayDate = new Date().toISOString();
             var isActive = "Inactive";
@@ -208,7 +208,7 @@ export default function WorkEmployeeGrid(props) {
         type: "array",
       });
       var excelFileName =
-        "WorkEmployees" + "_" + new Date().toISOString().slice(0, 10);
+        "WorkEmployees_" + new Date().toISOString().slice(0, 10);
       saveAsExcelFile(excelBuffer, excelFileName);
     });
   };
@@ -240,12 +240,6 @@ export default function WorkEmployeeGrid(props) {
         />
       </React.Fragment>
     );
-  };
-
-  const formatDate = (stringDate) => {
-    if (stringDate) {
-      return new Date(stringDate.substring(0, stringDate.indexOf("T")));
-    }
   };
 
   const formatDateFrom = (rowData) => {

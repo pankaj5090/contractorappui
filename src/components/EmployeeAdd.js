@@ -1,15 +1,15 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import CaContext from "../context/contractapp/CaContext";
 import { ToastContainer, toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
 
 export default function EmployeeAdd() {
   const context = useContext(CaContext);
   const location = useLocation();
   const { addEmployee, updateEmployee } = context;
-  const navigate = useNavigate();
+  const aadharRef = useRef();
+  const passBookRef = useRef();
   const [employee, setEmployee] = useState({
     name: "",
     aadhar: "",
@@ -19,6 +19,8 @@ export default function EmployeeAdd() {
     epf: "",
     sex: "",
     birthdate: "",
+    aadharFile: "",
+    passBookFile: "",
   });
 
   useEffect(() => {
@@ -88,6 +90,8 @@ export default function EmployeeAdd() {
         sex: "",
         birthdate: "",
       });
+      aadharRef.current.value = "";
+      passBookRef.current.value = "";
     } catch (e) {
       toast.error(`Action failed! ${e.message}`, {
         theme: "dark",
@@ -95,6 +99,14 @@ export default function EmployeeAdd() {
         autoClose: 3000,
       });
     }
+  };
+
+  const handleUploadAadhar = (e) => {
+    setEmployee({ ...employee, aadharFile: e.target.files[0] });
+  };
+
+  const handleUploadPassBook = (e) => {
+    setEmployee({ ...employee, passBookFile: e.target.files[0] });
   };
 
   const onChange = (e) => {
@@ -105,7 +117,11 @@ export default function EmployeeAdd() {
       <div className="card mb-3">
         <h5 className="card-header card text-center">Add Employee</h5>
         <div className="card-body">
-          <form className="needs-validation" onSubmit={handleSubmit}>
+          <form
+            className="needs-validation"
+            onSubmit={handleSubmit}
+            encType="multipart/form-data"
+          >
             <div className="row g-5 mb-3">
               <label
                 htmlFor="name"
@@ -279,9 +295,12 @@ export default function EmployeeAdd() {
               <div className="col-sm-4">
                 <input
                   className="form-control form-control-sm"
-                  id="aadharfile"
-                  name="aadharfile"
+                  id="aadharFile"
+                  name="aadharFile"
                   type="file"
+                  accept=".png, .jpg, .jpeg"
+                  ref={aadharRef}
+                  onChange={handleUploadAadhar}
                 />
               </div>
 
@@ -294,9 +313,12 @@ export default function EmployeeAdd() {
               <div className="col-sm-4">
                 <input
                   className="form-control form-control-sm"
-                  id="passbook"
-                  name="passbook"
+                  id="passBookFile"
+                  name="passBookFile"
                   type="file"
+                  accept=".png, .jpg, .jpeg"
+                  ref={passBookRef}
+                  onChange={handleUploadPassBook}
                 />
               </div>
             </div>

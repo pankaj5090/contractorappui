@@ -2,12 +2,12 @@ import CaContext from "./CaContext";
 import { useState } from "react";
 
 const CaState = (props) => {
-  const host = "http://localhost:5000";
+  const host = process.env.REACT_APP_SERVER_URL;
   const [employees, setEmployees] = useState([]);
   const [works, setWorks] = useState([]);
 
   const getEmployees = async () => {
-    const response = await fetch(`${host}/api/employee/get`, {
+    const response = await fetch(`${host}/employee/get`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -24,26 +24,29 @@ const CaState = (props) => {
   //add employee
   const addEmployee = async (newEmployee) => {
     /* code to call api */
-    const response = await fetch(`${host}/api/employee/add`, {
+    const formData = new FormData();
+    formData.append("name", newEmployee.name);
+    formData.append("aadhar", newEmployee.aadhar);
+    formData.append("account", newEmployee.account);
+    formData.append("ifsc", newEmployee.ifsc);
+    formData.append("esic", newEmployee.esic);
+    formData.append("epf", newEmployee.epf);
+    formData.append("sex", newEmployee.sex);
+    formData.append("birthdate", newEmployee.birthdate);
+    formData.append("aadharFile", newEmployee.aadharFile);
+    formData.append("passBookFile", newEmployee.passBookFile);
+    const response = await fetch(`${host}/employee/add`, {
       method: "POST",
+      body: formData,
       headers: {
-        "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify({
-        name: newEmployee.name,
-        aadhar: newEmployee.aadhar,
-        account: newEmployee.account,
-        ifsc: newEmployee.ifsc,
-        esic: newEmployee.esic,
-        epf: newEmployee.epf,
-        sex: newEmployee.sex,
-        birthdate: newEmployee.birthdate,
-      }),
     });
     if (response.status !== 200) {
       const jsonResponse = await response.json();
       var errors = jsonResponse.errors;
       var errorlist = jsonResponse.errorlist;
+      var multerError = jsonResponse.multerError;
       var errormessages = "";
       if (errors) {
         errors.map((e) => {
@@ -56,6 +59,9 @@ const CaState = (props) => {
           errormessages = errormessages.concat(error + " ");
         });
       }
+      if (multerError) {
+        errormessages = errormessages.concat(multerError + " ");
+      }
       throw new Error(`Request failed: ${errormessages}`);
     }
   };
@@ -63,26 +69,33 @@ const CaState = (props) => {
   //edit employee
   const updateEmployee = async (newEmployee) => {
     /* code to call api */
-    const response = await fetch(`${host}/api/employee/update`, {
+    const formData = new FormData();
+    formData.append("id", newEmployee.id);
+    formData.append("name", newEmployee.name);
+    formData.append("aadhar", newEmployee.aadhar);
+    formData.append("account", newEmployee.account);
+    formData.append("ifsc", newEmployee.ifsc);
+    formData.append("esic", newEmployee.esic);
+    formData.append("epf", newEmployee.epf);
+    formData.append("sex", newEmployee.sex);
+    formData.append(
+      "birthdate",
+      null != newEmployee.birthdate ? newEmployee.birthdate : ""
+    );
+    formData.append("aadharFile", newEmployee.aadharFile);
+    formData.append("passBookFile", newEmployee.passBookFile);
+    const response = await fetch(`${host}/employee/update`, {
       method: "POST",
+      body: formData,
       headers: {
-        "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify({
-        id: newEmployee.id,
-        name: newEmployee.name,
-        aadhar: newEmployee.aadhar,
-        account: newEmployee.account,
-        ifsc: newEmployee.ifsc,
-        esic: newEmployee.esic,
-        epf: newEmployee.epf,
-        sex: newEmployee.sex,
-        birthdate: newEmployee.birthdate,
-      }),
     });
     if (response.status !== 200) {
       const jsonResponse = await response.json();
       var errors = jsonResponse.errors;
+      var errorlist = jsonResponse.errorlist;
+      var multerError = jsonResponse.multerError;
       var errormessages = "";
       if (errors) {
         errors.map((e) => {
@@ -90,22 +103,26 @@ const CaState = (props) => {
           return errormessages;
         });
       }
+      if (errorlist) {
+        errorlist.forEach(function (error) {
+          errormessages = errormessages.concat(error + " ");
+        });
+      }
+      if (multerError) {
+        errormessages = errormessages.concat(multerError + " ");
+      }
       throw new Error(`Request failed: ${errormessages}`);
     }
   };
-
   //delete employee
   const deleteEmployee = async (employee) => {
     /* code to call api */
-    const response = await fetch(
-      `${host}/api/employee/delete/${employee._id}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await fetch(`${host}/employee/delete/${employee._id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     if (response.status !== 200) {
       const jsonResponse = await response.json();
       var errors = jsonResponse.errors;
@@ -136,7 +153,7 @@ const CaState = (props) => {
   const deleteEmployees = async (selectedEmployees) => {
     /* code to call api */
     let ids = selectedEmployees.map((emp) => emp._id);
-    const response = await fetch(`${host}/api/employee/deleteMany`, {
+    const response = await fetch(`${host}/employee/deleteMany`, {
       method: "POST",
       body: JSON.stringify({ ids: ids }),
       headers: {
@@ -171,7 +188,7 @@ const CaState = (props) => {
   ////Work functions
 
   const getWorks = async () => {
-    const response = await fetch(`${host}/api/work/get`, {
+    const response = await fetch(`${host}/work/get`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -188,19 +205,33 @@ const CaState = (props) => {
   //add work
   const addWork = async (newWork) => {
     /* code to call api */
-    const response = await fetch(`${host}/api/work/add`, {
+    const formData = new FormData();
+    console.log(newWork.name);
+    formData.append("name", newWork.name);
+    formData.append("division", newWork.division);
+    formData.append("allottedDate", newWork.allottedDate);
+    formData.append("fdrBankGuaranteeNo", newWork.fdrBankGuaranteeNo);
+    formData.append("fdrBankName", newWork.fdrBankName);
+    formData.append("guaranteeAmount", newWork.guaranteeAmount);
+    formData.append("estimatedCost", newWork.estimatedCost);
+    formData.append("contractorCost", newWork.contractorCost);
+    formData.append("acceptedCost", newWork.acceptedCost);
+    formData.append("percentageTender", newWork.percentageTender);
+    formData.append("timeAllowed", newWork.timeAllowed);
+    formData.append("fdrFile", newWork.fdrFile);
+
+    const response = await fetch(`${host}/work/add`, {
       method: "POST",
+      body: formData,
       headers: {
-        "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify({
-        newWork,
-      }),
     });
     if (response.status !== 200) {
       const jsonResponse = await response.json();
       var errors = jsonResponse.errors;
       var errorlist = jsonResponse.errorlist;
+      var multerError = jsonResponse.multerError;
       var errormessages = "";
       if (errors) {
         errors.map((e) => {
@@ -208,11 +239,13 @@ const CaState = (props) => {
           return errormessages;
         });
       }
-
       if (errorlist) {
         errorlist.forEach(function (error) {
           errormessages = errormessages.concat(error + " ");
         });
+      }
+      if (multerError) {
+        errormessages = errormessages.concat(multerError + " ");
       }
       throw new Error(`Request failed: ${errormessages}`);
     }
@@ -221,24 +254,47 @@ const CaState = (props) => {
   //edit work
   const updateWork = async (newWork) => {
     /* code to call api */
-    const response = await fetch(`${host}/api/work/update`, {
+    const formData = new FormData();
+    formData.append("id", newWork.id);
+    formData.append("name", newWork.name);
+    formData.append("division", newWork.division);
+    formData.append("allottedDate", newWork.allottedDate);
+    formData.append("fdrBankGuaranteeNo", newWork.fdrBankGuaranteeNo);
+    formData.append("fdrBankName", newWork.fdrBankName);
+    formData.append("guaranteeAmount", newWork.guaranteeAmount);
+    formData.append("estimatedCost", newWork.estimatedCost);
+    formData.append("contractorCost", newWork.contractorCost);
+    formData.append("acceptedCost", newWork.acceptedCost);
+    formData.append("percentageTender", newWork.percentageTender);
+    formData.append("timeAllowed", newWork.timeAllowed);
+    formData.append("fdrFile", newWork.fdrFile);
+
+    const response = await fetch(`${host}/work/update`, {
       method: "POST",
+      body: formData,
       headers: {
-        "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify({
-        newWork,
-      }),
     });
     if (response.status !== 200) {
       const jsonResponse = await response.json();
       var errors = jsonResponse.errors;
+      var errorlist = jsonResponse.errorlist;
+      var multerError = jsonResponse.multerError;
       var errormessages = "";
       if (errors) {
         errors.map((e) => {
           errormessages = errormessages.concat(e.msg + " ");
           return errormessages;
         });
+      }
+      if (errorlist) {
+        errorlist.forEach(function (error) {
+          errormessages = errormessages.concat(error + " ");
+        });
+      }
+      if (multerError) {
+        errormessages = errormessages.concat(multerError + " ");
       }
       throw new Error(`Request failed: ${errormessages}`);
     }
@@ -247,7 +303,7 @@ const CaState = (props) => {
   //delete work
   const deleteWork = async (work) => {
     /* code to call api */
-    const response = await fetch(`${host}/api/work/delete/${work._id}`, {
+    const response = await fetch(`${host}/work/delete/${work._id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -276,7 +332,7 @@ const CaState = (props) => {
   const deleteWorks = async (selectedWorks) => {
     /* code to call api */
     let ids = selectedWorks.map((w) => w._id);
-    const response = await fetch(`${host}/api/work/deleteMany`, {
+    const response = await fetch(`${host}/work/deleteMany`, {
       method: "POST",
       body: JSON.stringify({ ids: ids }),
       headers: {
@@ -307,7 +363,7 @@ const CaState = (props) => {
     selectedDateFrom,
     selectedDateTo
   ) => {
-    const response = await fetch(`${host}/api/work/employeeadd`, {
+    const response = await fetch(`${host}/work/employeeadd`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -348,7 +404,7 @@ const CaState = (props) => {
   //delete employee
   const deleteWorkEmployee = async (workEmployee) => {
     /* code to call api */
-    const response = await fetch(`${host}/api/work/employeedelete`, {
+    const response = await fetch(`${host}/work/employeedelete`, {
       method: "POST",
       body: JSON.stringify({
         workId: workEmployee.workId,
@@ -375,7 +431,7 @@ const CaState = (props) => {
   //edit work
   const updateWorkEmployee = async (newWorkEmployee) => {
     /* code to call api */
-    const response = await fetch(`${host}/api/work/employeeupdate`, {
+    const response = await fetch(`${host}/work/employeeupdate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -409,6 +465,16 @@ const CaState = (props) => {
     }
   };
 
+  const fetchImage = async (fileName, path) => {
+    const response = await fetch(`${host}${path}${fileName}`);
+    if (response.status !== 200) {
+      throw new Error(`Image Not found: ${response.status}`);
+    }
+    const imageBlob = await response.blob();
+    const imageObjectURL = URL.createObjectURL(imageBlob);
+    return imageObjectURL;
+  };
+
   return (
     <CaContext.Provider
       value={{
@@ -431,6 +497,9 @@ const CaState = (props) => {
         addWorkEmployee,
         deleteWorkEmployee,
         updateWorkEmployee,
+
+        //fetch image
+        fetchImage,
       }}
     >
       {props.children}

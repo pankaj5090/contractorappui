@@ -3,13 +3,11 @@ import CaContext from "../context/contractapp/CaContext";
 import { ToastContainer, toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
 
 export default function WorkEmployeeEdit() {
   const context = useContext(CaContext);
   const location = useLocation();
   const { updateWorkEmployee } = context;
-  const navigate = useNavigate();
   const [workEmployee, setWorkEmployee] = useState({
     workId: "",
     workName: "",

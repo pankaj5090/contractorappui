@@ -20,15 +20,22 @@ export default function EmployeeGrid(props) {
     epf: "",
     sex: "",
     birthdate: "",
+    origPassBookFile: "",
+    origAadharFile: "",
   };
-
   const [deleteEmployeeDialog, setDeleteEmployeeDialog] = useState(false);
   const [employee, setEmployee] = useState(emptyEmployee);
   const [selectedEmployees, setSelectedEmployees] = useState(null);
   const [deleteEmployeesDialog, setDeleteEmployeesDialog] = useState(false);
 
   const context = useContext(CaContext);
-  const { employees, deleteEmployee, deleteEmployees, getEmployees } = context;
+  const {
+    employees,
+    deleteEmployee,
+    deleteEmployees,
+    getEmployees,
+    fetchImage,
+  } = context;
 
   useEffect(() => {
     getEmployees();
@@ -219,6 +226,50 @@ export default function EmployeeGrid(props) {
     );
   };
 
+  const actionAadharTemplate = (rowData) => {
+    if (rowData["origAadharFile"]) {
+      return (
+        <React.Fragment>
+          <Button
+            label={rowData["origAadharFile"]}
+            className="p-button-text float-left"
+            size="sm"
+            onClick={() => openFile(rowData["aadharFile"], "/aadhar/images/")}
+          />
+        </React.Fragment>
+      );
+    }
+  };
+
+  const actionPassBookTemplate = (rowData) => {
+    if (rowData["origPassBookFile"]) {
+      return (
+        <React.Fragment>
+          <Button
+            label={rowData["origPassBookFile"]}
+            className="p-button-text"
+            size="sm"
+            onClick={() =>
+              openFile(rowData["passBookFile"], "/passbook/images/")
+            }
+          />
+        </React.Fragment>
+      );
+    }
+  };
+
+  const openFile = async (fileName, path) => {
+    try {
+      const aadharImageUrl = await fetchImage(fileName, path);
+      window.open(aadharImageUrl, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      toast.error(e.message, {
+        theme: "dark",
+        hideProgressBar: true,
+      });
+    }
+  };
+
   const formatDate = (rowData) => {
     if (rowData["birthDate"]) {
       return new Date(
@@ -310,7 +361,18 @@ export default function EmployeeGrid(props) {
             field="birthDate"
             body={formatDate}
             header="Birth Date"
-            style={{ width: "10%" }}
+            style={{ width: "8%" }}
+          />
+          <Column
+            field="origAadharFile"
+            header="Aadhar File"
+            body={actionAadharTemplate}
+          />
+          <Column
+            field="origPassBookFile"
+            header="Pass Book File"
+            body={actionPassBookTemplate}
+            style={{ width: "5%" }}
           />
           <Column
             body={actionBodyTemplate}

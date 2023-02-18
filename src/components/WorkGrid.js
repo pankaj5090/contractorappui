@@ -31,7 +31,7 @@ export default function WorkGrid(props) {
   const [deleteWorksDialog, setDeleteWorksDialog] = useState(false);
 
   const context = useContext(CaContext);
-  const { works, deleteWork, deleteWorks, getWorks } = context;
+  const { works, deleteWork, deleteWorks, getWorks, fetchImage } = context;
 
   useEffect(() => {
     getWorks();
@@ -224,6 +224,31 @@ export default function WorkGrid(props) {
     );
   };
 
+  const actionFdrTemplate = (rowData) => {
+    if (rowData["origFdrFile"]) {
+      return (
+        <React.Fragment>
+          <Button
+            label={rowData["origFdrFile"]}
+            className="p-button-text float-left"
+            size="sm"
+            onClick={() => openFile(rowData["fdrFile"], "/fdr/images/")}
+          />
+        </React.Fragment>
+      );
+    }
+  };
+  const openFile = async (fileName, path) => {
+    try {
+      const fdrImageUrl = await fetchImage(fileName, path);
+      window.open(fdrImageUrl, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      toast.error(e.message, {
+        theme: "dark",
+        hideProgressBar: true,
+      });
+    }
+  };
   const formatDate = (rowData) => {
     if (rowData["allottedDate"]) {
       return new Date(
@@ -305,6 +330,11 @@ export default function WorkGrid(props) {
             sortable
           />
           <Column field="timeAllowed" header="Time Allowed" sortable />
+          <Column
+            field="origFdrFile"
+            header="Fd File"
+            body={actionFdrTemplate}
+          />
           <Column
             body={actionBodyTemplate}
             exportable={false}

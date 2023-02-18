@@ -1,15 +1,14 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import CaContext from "../context/contractapp/CaContext";
 import { ToastContainer, toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
 
 export default function WorkAdd() {
   const context = useContext(CaContext);
   const location = useLocation();
+  const fdrRef = useRef();
   const { addWork, updateWork } = context;
-  const navigate = useNavigate();
   const [work, setWork] = useState({
     name: "",
     division: "",
@@ -22,6 +21,7 @@ export default function WorkAdd() {
     acceptedCost: "",
     percentageTender: "",
     timeAllowed: "",
+    fdrFile: "",
   });
 
   useEffect(() => {
@@ -95,14 +95,17 @@ export default function WorkAdd() {
         percentageTender: "",
         timeAllowed: "",
       });
+      fdrRef.current.value = "";
     } catch (e) {
-      console.log("in work add " + e.message);
       toast.error(`Action failed! ${e.message}`, {
         theme: "dark",
         hideProgressBar: true,
         autoClose: 3000,
       });
     }
+  };
+  const handleUploadFdr = (e) => {
+    setWork({ ...work, fdrFile: e.target.files[0] });
   };
 
   const onChange = (e) => {
@@ -113,7 +116,11 @@ export default function WorkAdd() {
       <div className="card mb-3">
         <h5 className="card-header card text-center">Add Work</h5>
         <div className="card-body">
-          <form className="needs-validation" onSubmit={handleSubmit}>
+          <form
+            className="needs-validation"
+            onSubmit={handleSubmit}
+            encType="multipart/form-data"
+          >
             <div className="row g-5 mb-3">
               <label
                 htmlFor="name"
@@ -322,9 +329,12 @@ export default function WorkAdd() {
               <div className="col-sm-4">
                 <input
                   className="form-control form-control-sm"
-                  id="fdr"
-                  name="fdr"
+                  id="fdrFile"
+                  name="fdrFile"
                   type="file"
+                  accept=".png, .jpg, .jpeg"
+                  ref={fdrRef}
+                  onChange={handleUploadFdr}
                 />
               </div>
             </div>
