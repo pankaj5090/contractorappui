@@ -27,20 +27,80 @@ export default function EmployeeGrid(props) {
   const [employee, setEmployee] = useState(emptyEmployee);
   const [selectedEmployees, setSelectedEmployees] = useState(null);
   const [deleteEmployeesDialog, setDeleteEmployeesDialog] = useState(false);
-
+  const [employees, setEmployees] = useState([]);
   const context = useContext(CaContext);
   const {
-    employees,
     deleteEmployee,
     deleteEmployees,
     getEmployees,
     fetchImage,
+    getWorks,
   } = context;
 
   useEffect(() => {
-    getEmployees();
+    const fetchData = async () => {
+      if (employees.length <= 0) {
+        const workJson = await getWorks();
+        const empWorkList = createEmpWorkObject(workJson);
+        const empJson = await getEmployees();
+        populateEmployees(empJson, empWorkList);
+      }
+    };
+    fetchData();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const populateEmployees = (empJson, empWorkList) => {
+    const emps = [];
+    if (empJson.length > 0) {
+      empJson.forEach((emp) => {
+        var isWorking = "No";
+        if (empWorkList.includes(emp._id)) {
+          isWorking = "Yes";
+        }
+        emps.push({
+          _id: emp._id,
+          name: emp.name,
+          aadharCardNumber: emp.aadharCardNumber,
+          accountNumber: emp.accountNumber,
+          ifscCode: emp.ifscCode,
+          esicNumber: emp.esicNumber,
+          epfNumber: emp.epfNumber,
+          sex: emp.sex,
+          birthDate: emp.birthDate,
+          origAadharFile: emp.origAadharFile,
+          aadharFile: emp.aadharFile,
+          origPassBookFile: emp.origPassBookFile,
+          passBookFile: emp.passBookFile,
+          createdDate: emp.createdDate,
+          updatedDate: emp.updatedDate,
+          working: isWorking,
+        });
+      });
+      setEmployees(emps);
+    }
+  };
+
+  const createEmpWorkObject = (workList) => {
+    var empWorkList = [];
+    if (workList.length > 0) {
+      workList.forEach((work) => {
+        if (work.employees && work.employees.length > 0) {
+          work.employees.forEach((obj) => {
+            var todayDate = new Date().toISOString();
+            if (
+              (todayDate >= obj.dateFrom && todayDate <= obj.dateTo) ||
+              todayDate <= obj.dateFrom
+            ) {
+              empWorkList.push(obj.id);
+            }
+          });
+        }
+      });
+    }
+    return empWorkList;
+  };
 
   const search = "Search";
   const navigate = useNavigate();
@@ -270,15 +330,15 @@ export default function EmployeeGrid(props) {
     }
   };
 
-  const formatDate = (rowData) => {
-    if (rowData["birthDate"]) {
-      return new Date(
-        rowData["birthDate"].substring(0, rowData["birthDate"].indexOf("T"))
-      )
-        .toLocaleDateString("en-GB")
-        .replace(/\//g, "-");
-    }
-  };
+  // const formatDate = (rowData) => {
+  //   if (rowData["birthDate"]) {
+  //     return new Date(
+  //       rowData["birthDate"].substring(0, rowData["birthDate"].indexOf("T"))
+  //     )
+  //       .toLocaleDateString("en-GB")
+  //       .replace(/\//g, "-");
+  //   }
+  // };
 
   const filtersEmployee = {
     name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -286,6 +346,7 @@ export default function EmployeeGrid(props) {
     accountNumber: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     ifscCode: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     sex: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    working: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   };
 
   return (
@@ -358,10 +419,10 @@ export default function EmployeeGrid(props) {
             filterPlaceholder={search}
           />
           <Column
-            field="birthDate"
-            body={formatDate}
-            header="Birth Date"
-            style={{ width: "8%" }}
+            field="working"
+            header="Is Working"
+            filter
+            filterPlaceholder={search}
           />
           <Column
             field="origAadharFile"
